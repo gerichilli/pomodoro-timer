@@ -10,21 +10,24 @@ const startBtn = document.querySelector('.action--start');
 const pauseBtn  = document.querySelector('.action--pause');
 const resetBtn  = document.querySelector('.action--reset');
 
-let timerDown;
+let timerDown, clickable, activeClass;
 let audio = new Audio('audio.mp3');
 let time = 25 * 60;
 let current = 'pomodoro';
 
+const removeClass = function(arr) {
+    activeClass = arr === options ?  'option--active' : 'action--active';
+    arr.forEach(el => el.classList.remove(activeClass));
+    return activeClass;
+};
 
 const newActiveClass = function(arr, active){
-    const activeClass = arr === options ?  'option--active' : 'action--active';
-    arr.forEach(el => el.classList.remove(activeClass));
+    removeClass(arr);
     if(active !== resetBtn)
     active.classList.add(activeClass);
 }
 
 const startCountDown = function(){
-    
     const countDown = function(){
         time--;
         const min = `${Math.trunc(time / 60)}`.padStart(2, 0);
@@ -57,6 +60,7 @@ const checkTime = function() {
 }
 
 const resetCountDown = function(){
+    clickable = true;
     audio.pause();
     if(timerDown) clearInterval(timerDown); 
     checkTime();
@@ -71,14 +75,18 @@ const resetCountDown = function(){
     }
 }
 
-
+clickable = true;
 startBtn.addEventListener('click', function(){
-    audio.pause();
-    newActiveClass(actions, startBtn);
-    startCountDown();
+    if (clickable){
+        audio.pause();
+        newActiveClass(actions, startBtn);
+        startCountDown();
+    }
+    clickable = false;
 });
 
 pauseBtn.addEventListener('click', function(){
+    clickable = true;
     audio.pause();
     newActiveClass(actions, pauseBtn);
     if(timerDown) clearInterval(timerDown);
@@ -93,18 +101,21 @@ pomodoroBtn.addEventListener('click', function(){
     current = 'pomodoro';
     resetCountDown();
     newActiveClass(options, pomodoroBtn);
+    removeClass(actions);
 });
 
 shortBreakBtn.addEventListener('click', function(){
     current = 'short';
     resetCountDown();
     newActiveClass(options, shortBreakBtn);
+    removeClass(actions);
 });
 
 longBreakBtn.addEventListener('click', function(){
     current = 'long';
     resetCountDown();
     newActiveClass(options, longBreakBtn);
+    removeClass(actions);
 });
 
 
