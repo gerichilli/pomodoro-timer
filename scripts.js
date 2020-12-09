@@ -10,9 +10,11 @@ const startBtn = document.querySelector('.action--start');
 const pauseBtn  = document.querySelector('.action--pause');
 const resetBtn  = document.querySelector('.action--reset');
 
-let time, timerDown, current;
-time = 25 * 60;
-current = 'pomodoro';
+let timerDown;
+let audio = new Audio('audio.mp3');
+let time = 25 * 60;
+let current = 'pomodoro';
+
 
 const newActiveClass = function(arr, active){
     const activeClass = arr === options ?  'option--active' : 'action--active';
@@ -32,8 +34,8 @@ const startCountDown = function(){
         if(time === 0){
             clearInterval(timerDown);
             timeDOM.textContent = '00:00';
-            let audio = new Audio('audio.mp3');
             audio.play();
+            checkTime();
         }
     };
     
@@ -42,20 +44,42 @@ const startCountDown = function(){
     return timerDown;
 }
 
+const checkTime = function() {
+    if (current === 'pomodoro') {
+        time = 25 * 60;
+    }
+    if (current === 'short') {
+        time = 5 * 60;
+    }
+    if (current === 'long') {
+        time = 15 * 60;
+    }
+}
+
 const resetCountDown = function(){
-    if(timerDown) clearInterval(timerDown);
-    if (current === 'pomodoro') timeDOM.textContent = `25:00`;
-    if (current === 'short') timeDOM.textContent = `05:00`;
-    if (current === 'long') timeDOM.textContent = `15:00`;
+    audio.pause();
+    if(timerDown) clearInterval(timerDown); 
+    checkTime();
+    if (current === 'pomodoro') {
+        timeDOM.textContent = '25:00';
+    }
+    if (current === 'short') {
+        timeDOM.textContent = '05:00';
+    }
+    if (current === 'long') {
+        timeDOM.textContent = '15:00';
+    }
 }
 
 
 startBtn.addEventListener('click', function(){
+    audio.pause();
     newActiveClass(actions, startBtn);
     startCountDown();
 });
 
 pauseBtn.addEventListener('click', function(){
+    audio.pause();
     newActiveClass(actions, pauseBtn);
     if(timerDown) clearInterval(timerDown);
 });
@@ -68,21 +92,18 @@ resetBtn.addEventListener('click', function(){
 pomodoroBtn.addEventListener('click', function(){
     current = 'pomodoro';
     resetCountDown();
-    time = 25 * 60;
     newActiveClass(options, pomodoroBtn);
 });
 
 shortBreakBtn.addEventListener('click', function(){
     current = 'short';
     resetCountDown();
-    time = 5 * 60;
     newActiveClass(options, shortBreakBtn);
 });
 
 longBreakBtn.addEventListener('click', function(){
     current = 'long';
     resetCountDown();
-    time = 15 * 60;
     newActiveClass(options, longBreakBtn);
 });
 
